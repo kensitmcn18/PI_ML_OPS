@@ -1,16 +1,20 @@
-## PROYECTO INDIVIDUAL Nº1
-###Machine Learning Operations
+**PROYECTO INDIVIDUAL Nº1**
+**Machine Learning Operations**
 
 ------------
 
-#####Presentado por 
+**Presentado por **
 ***Kensit Marian Cortés Nemogá***
 
 ------------
-###Acerca del proyecto
+**Acerca del proyecto**
 <div style="text-align: justify;">
 Steam, una plataforma líder en juegos para PC, necesita mejorar su sistema de recomendación. Este proyecto busca crear un sistema más eficaz y personalizado usando análisis de datos y aprendizaje automático. El propósito es ofrecer sugerencias de juegos más pertinentes para mejorar la satisfacción del usuario, impulsar el compromiso y aumentar las ventas y los ingresos de la plataforma.
-### Herramientas utilizadas
+
+------------
+
+
+**Herramientas utilizadas**
 -PYTHON 
 -PANDAS
 -FASTAPI
@@ -18,10 +22,14 @@ Steam, una plataforma líder en juegos para PC, necesita mejorar su sistema de r
 
 ------------
 
-##Estrategia de trabajo 
-###Extraccion, Transformacion y Carga de datos
+**Estrategia de trabajo **
 
-####Ingesta de datos 
+------------
+
+
+**Extraccion, Transformacion y Carga de datos**
+
+**Ingesta de datos**
 Para iniciar nuestro proceso ETL, contaremos con tres carpetas de archivos:
 		- Steam_games.json
 		- User_reviews.json 
@@ -31,7 +39,7 @@ De los cuales obtendremos los siguientes archivos respectivamente:
 - Output_steam_games
 - Australian_user_reviews
 - Australian_users_items
-####Transformacion de datos
+**Transformacion de datos**
 
 Se necesitan de las siguientes librerias para abrir y leer los archivos: 
 
@@ -195,35 +203,34 @@ df.drop('reviews', axis=1, inplace=True)
 print(df_desanidado)
 ```
   -
-####Desarrollo de la API
+**Desarrollo de la API**
 
-#####Endpoint 1:  /developer
+**Endpoint 1:  /developer**
 Este endpoint devuelve la cantidad de items y porcentaje de contenido Free por año según empresa desarrolladora.
 - **Metodo**: GET
-- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/developer/{developer}
+- **'URL'**:https://machine-learning-operations-byli.onrender.com/api/v1/developer/{developer}
 - **Parámetros de consulta:** developer
 
-#####Endpoint 2:  /user
+**Endpoint 2:  /user**
 Este endpoinnt  devuelve la cantidad de dinero gastado por el usuario, el porcentaje de recomendación en base a reviews.recommend y cantidad de items
 - **Metodo**: GET
 - **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/userdata/{developer}
 - **Parámetros de consulta:** user
 
-#####Endpoint 3:  /genre
+**Endpoint 3:  /genre**
  Este endpoint  devuelve el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año de lanzamiento.
 - **Metodo**: GET
 - **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/user-for-genre/{genre}
 - **Parámetros de consulta:** genre
 
-#####Endpoint 4:  /year
+**Endpoint 4:  /year**
 Este endpoint devuelve el top 3 de desarrolladores con juegos MÁS recomendados por usuarios para el año dado. (reviews.recommend = True y comentarios positivos
 - **Metodo**: GET
 - **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/best-developer-year/{year}
 - **Parámetros de consulta:** year
 
-#####Endpoint 5:  /developer
+**Endpoint 5:  /developer**
 Este endpoint  devuelve un diccionario con el nombre del desarrollador como llave y una lista con la cantidad total de registros de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento como valor positivo o negativo.
 - **Metodo**: GET
 - **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/developer-reviews-analysis/{developer}
 - **Parámetros de consulta:** developer
-###End
