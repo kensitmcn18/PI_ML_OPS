@@ -4,9 +4,9 @@
 
 ------------
 
-# <h1 align=center> *Presentado por* </h1>
+<h1 style="text-align:center;">Presentado por</h1>
 
-# <h1 align=center>*`Kensit Marian Cortes Nemoga`*</h1>
+<h1 style="text-align:center;">Kensit marian Cortes nemoga</h1>
 
 ------------
 **Acerca del proyecto**
@@ -18,14 +18,14 @@ Steam, una plataforma líder en juegos para PC, necesita mejorar su sistema de r
 
 **Herramientas utilizadas**
 
--PYTHON 
--PANDAS
--FASTAPI
--RENDER
+- PYTHON 
+- PANDAS
+- FASTAPI
+- RENDER
 
 ------------
 
- ## <strong>Estrategia de trabajo</strong**
+**Estrategia de trabajo**
 
 ------------
 
@@ -205,10 +205,10 @@ df.drop('reviews', axis=1, inplace=True)
 
 print(df_desanidado)
 ```
-  -
+  
 **Desarrollo de la API**
 
-**Endpoint 1:  /developer**- <strong>Metodo</strong>:
+**Endpoint 1:  /developer**
 
 Este endpoint devuelve la cantidad de items y porcentaje de contenido Free por año según empresa desarrolladora.
 - <strong>Metodo</strong>:: GET
