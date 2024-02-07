@@ -4,9 +4,9 @@
 
 ------------
 
-# <h1 align=center> **Presentado por** </h1>
+# <h1 align=center> *Presentado por* </h1>
 
-# <h1 align=center>**`Kensit Marian Cortes Nemoga`**</h1>
+# <h1 align=center>*`Kensit Marian Cortes Nemoga`*</h1>
 
 ------------
 **Acerca del proyecto**
@@ -219,7 +219,7 @@ Este endpoint devuelve la cantidad de items y porcentaje de contenido Free por a
 
 Este endpoinnt  devuelve la cantidad de dinero gastado por el usuario, el porcentaje de recomendación en base a reviews.recommend y cantidad de items
 - <strong>Metodo</strong>: GET
-- <strong>URL</strong>:https://machine-learning-operations-byli.onrender.com/api/v1/userdata/{developer}
+- <strong>URL</strong>:https://machine-learning-operations-byli.onrender.com/api/v1/userdata/{user}
 - <strong>Parametro de consulta</strong>: user
 
 **Endpoint 3:  /genre**
