@@ -1,151 +1,229 @@
-<p align=center><img src=https://d31uz8lwfmyn8g.cloudfront.net/Assets/logo-henry-white-lg.png><p>
+## PROYECTO INDIVIDUAL Nº1
+###Machine Learning Operations
 
-# <h1 align=center> **PROYECTO INDIVIDUAL Nº1** </h1>
+------------
 
-# <h1 align=center>**`Machine Learning Operations (MLOps)`**</h1>
+#####Presentado por 
+***Kensit Marian Cortés Nemogá***
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/67664604/217914153-1eb00e25-ac08-4dfa-aaf8-53c09038f082.png"  height=300>
-</p>
+------------
+###Acerca del proyecto
+<div style="text-align: justify;">
+Steam, una plataforma líder en juegos para PC, necesita mejorar su sistema de recomendación. Este proyecto busca crear un sistema más eficaz y personalizado usando análisis de datos y aprendizaje automático. El propósito es ofrecer sugerencias de juegos más pertinentes para mejorar la satisfacción del usuario, impulsar el compromiso y aumentar las ventas y los ingresos de la plataforma.
+### Herramientas utilizadas
+-PYTHON 
+-PANDAS
+-FASTAPI
+-RENDER
 
-¡Bienvenidos al primer proyecto individual de la etapa de labs! En esta ocasión, deberán hacer un trabajo situándose en el rol de un ***MLOps Engineer***.  
+------------
 
-<hr>  
+##Estrategia de trabajo 
+###Extraccion, Transformacion y Carga de datos
 
-## **Descripción del problema (Contexto y rol a desarrollar)**
+####Ingesta de datos 
+Para iniciar nuestro proceso ETL, contaremos con tres carpetas de archivos:
+		- Steam_games.json
+		- User_reviews.json 
+		- Users_items_json
+ 
+De los cuales obtendremos los siguientes archivos respectivamente: 
+- Output_steam_games
+- Australian_user_reviews
+- Australian_users_items
+####Transformacion de datos
 
-## Contexto
+Se necesitan de las siguientes librerias para abrir y leer los archivos: 
 
-Tienes tu modelo de recomendación dando unas buenas métricas :smirk:, y ahora, cómo lo llevas al mundo real? :eyes:
+```python
+import os
+import json
+import pandas as pd
+import os.path
+```
+Para abrir el archivo output_steam_games, lo haacemos de la siguiente manera: 
+```python
+# Obtén la ruta al directorio 'models'
+models_directory = os.path.join(os.path.dirname('__file__'), '../models')
 
-El ciclo de vida de un proyecto de Machine Learning debe contemplar desde el tratamiento y recolección de los datos (Data Engineer stuff) hasta el entrenamiento y mantenimiento del modelo de ML según llegan nuevos datos.
+def cargar_json_y_convertir_a_dataframe(nombre_archivo):
+    ruta_archivo = os.path.join(models_directory, nombre_archivo)
 
+    try:
+        dataframe = pd.read_json(ruta_archivo, lines=True)
+        return dataframe
+    except FileNotFoundError:
+        # Manejar la situación en la que el archivo no existe
+        return None
+    except json.JSONDecodeError as e:
+        # Manejar errores de decodificación JSON
+        print(f"Error al decodificar el archivo JSON: {e}")
+        return None
+```
+Como ejemplo de uso tenemos: 
+```python
+archivo1_dataframe =cargar_json_y_convertir_a_dataframe('output_steam_games.json')
+if archivo1_dataframe is not None:
+		print(archivo1_dataframe.head(5))
+```
+Resultado
+```python
+  publisher genres app_name title   url release_date  tags reviews_url specs   
+0      None   None     None  None  None         None  None        None  None  \
+1      None   None     None  None  None         None  None        None  None   
+2      None   None     None  None  None         None  None        None  None   
+3      None   None     None  None  None         None  None        None  None   
+4      None   None     None  None  None         None  None        None  None   
 
-## Rol a desarrollar
+  price  early_access  id developer  
+0  None           NaN NaN      None  
+1  None           NaN NaN      None  
+2  None           NaN NaN      None  
+3  None           NaN NaN      None  
+4  None           NaN NaN      None  
+```
+Eliminamos los valores nulos
+```python
+archivo1_dataframe = archivo1_dataframe.dropna(how='any')
+```
+Eliminamos las columnas que no se van a utilizar 
+```python
+columnas=['app_name','url','reviews_url','specs','early_access']
+archivo1_dataframe = archivo1_dataframe.drop(columnas, axis=1)
 
-Empezaste a trabajar como **`Data Scientist`** en Steam, una plataforma multinacional de videojuegos. El mundo es bello y vas a crear tu primer modelo de ML que soluciona un problema de negocio: Steam pide que te encargues de crear un sistema de recomendación de videojuegos para usuarios. :worried:
+```
+Resultado
 
-Vas a sus datos y te das cuenta que la madurez de los mismos es poca (ok, es nula :sob: ): Datos anidados, de tipo raw, no hay procesos automatizados para la actualización de nuevos productos, entre otras cosas… haciendo tu trabajo imposible :weary: . 
+```python
+archivo1_dataframe.columns.tolist()
+```
+['publisher', 'genres', 'title', 'release_date', 'tags', 'price', 'developer','id']
 
-Debes empezar desde 0, haciendo un trabajo rápido de **`Data Engineer`** y tener un **`MVP`** (_Minimum Viable Product_) para el cierre del proyecto! Tu cabeza va a explotar 🤯, pero al menos sabes cual es, conceptualmente, el camino que debes de seguir :exclamation:. Así que espantas los miedos y pones manos a la obra :muscle:
+Verificamos la columna "release_date"para verificar que este ben el formato, ya que necesitamos extraer el año 
+```python
+archivo1_dataframe.release_date.sort_values()
+```
+Resultado
+```python
+89687     1983-06-19
+89855     1984-04-29
+110028    1984-11-01
+116377    1985-01-01
+99223     1986-05-01
+             ...
+109456      Oct 2016
+101344          SOON
+120318         SOON™
+119928      Sep 2009
+90917       Sep 2014
+Name: release_date, Length: 22530, dtype: object
+```
+Eliminamos los registros con formaato dde fecha  "SOON"
+```python
+archivo1_dataframe= archivo1_dataframe.drop([101344,120318])
+```
+Del archivo australian_user_reviews.json tenemos: 
+```python
+import ast
+lista = [ ]
+with open("../models/australian_user_reviews.json",encoding='utf-8') as f:
+    for line in f.readlines():
+        lista.append(ast.literal_eval(line))
+```
 
-<p align="center">
-<img src="https://github.com/HX-PRomero/PI_ML_OPS/raw/main/src/DiagramaConceptualDelFlujoDeProcesos.png"  height=500>
-</p>
+```python
+df = pd.DataFrame(lista)
+df.head(5)
+```
+para el análisis de sentimientos importamos la libreria TextBlob y hacemos el análisis
+```python
+from textblob import TextBlob 
 
-<sub> Nota que aquí se reflejan procesos, no herramientas tecnológicas. Haz el ejercicio de entender qué herramienta del stack corresponde a cada parte del proceso<sub/>
+def sentiment_analysis(review):
+    if isinstance(review, list) and review:
+        text = review[0].get('review','')
+        sentiment = TextBlob(text).sentiment.polarity
+        if sentiment < -0.2:
+            return 0 # Negative
+        elif -0.2 <= sentiment <= 0.2:
+            return 1 # Neutral
+        else:
+            return 2 # Positive
+    else:
+        return 1
+```
+Se crea una lista vacia paraa guardas los datos desanidados 
+```python
+import pandas as pd
 
-## **Propuesta de trabajo (requerimientos de aprobación)**
+# Definir una función que se aplicará a cada fila del DataFrame
+def desanidar_fila(row):
+    user_id = row['user_id']
+    user_url = row['user_url']
+    sentiment_analysis_value = row['sentiment_analysis']
+    reviews = row['reviews']
 
-**`Transformaciones`**:  Para este MVP no se te pide transformaciones de datos(` aunque encuentres una motivo para hacerlo `) pero trabajaremos en leer el dataset con el formato correcto. Puedes eliminar las columnas que no necesitan para responder las consultas o preparar los modelos de aprendizaje automático, y de esa manera optimizar el rendimiento de la API y el entrenamiento del modelo.
+    # Verificar si reviews es una lista antes de intentar desanidar
+    if isinstance(reviews, list):
+    # Crear una lista de diccionarios desanidados para cada elemento en la lista de reviews
+        desanidados = [{
+            'user_id': user_id,
+            'user_url': user_url,
+            'reviews': reviews,
+            'sentiment_analysis': sentiment_analysis_value,
+            'posted': e.get('posted', ''),
+            'item_id': e.get('item_id', ''),
+            'recommend': e.get('recommend', False),
+            'review': e.get('review', '')
+        } for e in reviews]
+    elif isinstance(reviews, float) and not pd.notna(reviews):
+        # Si reviews es NaN, asignar una lista vacía a desanidados
+        desanidados = []
 
-**`Feature Engineering`**:  En el dataset *user_reviews* se incluyen reseñas de juegos hechos por distintos usuarios. Debes crear la columna ***'sentiment_analysis'*** aplicando análisis de sentimiento con NLP con la siguiente escala: debe tomar el valor '0' si es malo, '1' si es neutral y '2' si es positivo. Esta nueva columna debe reemplazar la de user_reviews.review para facilitar el trabajo de los modelos de machine learning y el análisis de datos. De no ser posible este análisis por estar ausente la reseña escrita, debe tomar el valor de `1`.
+    return desanidados
 
-**`Desarrollo API`**:   Propones disponibilizar los datos de la empresa usando el framework ***FastAPI***. Las consultas que propones son las siguientes:
+```
+Ahora aplicamos  la función a cada fila del DataFrame y convertir la lista de listas en una lista plana
+```python
+lista_desanidada = df.apply(desanidar_fila, axis=1).explode().tolist()
+```
+para probar 
+```python
+df_desanidado = pd.DataFrame(lista_desanidada)
+df.drop('reviews', axis=1, inplace=True)
 
-<sub> Debes crear las siguientes funciones para los endpoints que se consumirán en la API, recuerden que deben tener un decorador por cada una (@app.get(‘/’)).<sub/>
+print(df_desanidado)
+```
+  -
+####Desarrollo de la API
 
+#####Endpoint 1:  /developer
+Este endpoint devuelve la cantidad de items y porcentaje de contenido Free por año según empresa desarrolladora.
+- **Metodo**: GET
+- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/developer/{developer}
+- **Parámetros de consulta:** developer
 
-+ def **PlayTimeGenre( *`genero` : str* )**:
-    Debe devolver `año` con mas horas jugadas para dicho género.
-  
-Ejemplo de retorno: {"Año de lanzamiento con más horas jugadas para Género X" : 2013}
+#####Endpoint 2:  /user
+Este endpoinnt  devuelve la cantidad de dinero gastado por el usuario, el porcentaje de recomendación en base a reviews.recommend y cantidad de items
+- **Metodo**: GET
+- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/userdata/{developer}
+- **Parámetros de consulta:** user
 
-+ def **UserForGenre( *`genero` : str* )**:
-    Debe devolver el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año.
+#####Endpoint 3:  /genre
+ Este endpoint  devuelve el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año de lanzamiento.
+- **Metodo**: GET
+- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/user-for-genre/{genre}
+- **Parámetros de consulta:** genre
 
-Ejemplo de retorno: {"Usuario con más horas jugadas para Género X" : us213ndjss09sdf,
-			     "Horas jugadas":[{Año: 2013, Horas: 203}, {Año: 2012, Horas: 100}, {Año: 2011, Horas: 23}]}
+#####Endpoint 4:  /year
+Este endpoint devuelve el top 3 de desarrolladores con juegos MÁS recomendados por usuarios para el año dado. (reviews.recommend = True y comentarios positivos
+- **Metodo**: GET
+- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/best-developer-year/{year}
+- **Parámetros de consulta:** year
 
-+ def **UsersRecommend( *`año` : int* )**:
-   Devuelve el top 3 de juegos MÁS recomendados por usuarios para el año dado. (reviews.recommend = True y comentarios positivos/neutrales)
-  
-Ejemplo de retorno: [{"Puesto 1" : X}, {"Puesto 2" : Y},{"Puesto 3" : Z}]
-
-+ def **UsersWorstDeveloper( *`año` : int* )**:
-   Devuelve el top 3 de desarrolladoras con juegos MENOS recomendados por usuarios para el año dado. (reviews.recommend = False y comentarios negativos)
-  
-Ejemplo de retorno: [{"Puesto 1" : X}, {"Puesto 2" : Y},{"Puesto 3" : Z}]
-
-+ def **sentiment_analysis( *`empresa desarrolladora` : str* )**:
-    Según la empresa desarrolladora, se devuelve un diccionario con el nombre de la desarrolladora como llave y una lista con la cantidad total 
-    de registros de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento como valor. 
-
-Ejemplo de retorno: {'Valve' : [Negative = 182, Neutral = 120, Positive = 278]}
-
-<br/>
-
-
-> `Importante`<br>
-El MVP _tiene_ que ser una API que pueda ser consumida segun los criterios de [API REST o RESTful](https://rockcontent.com/es/blog/api-rest/) desde cualquier dispositivo conectado a internet. Algunas herramientas como por ejemplo, Streamlit, si bien pueden brindar una interfaz de consulta, no cumplen con las condiciones para ser consideradas una API, sin workarounds.
-
-
-**`Deployment`**: Conoces sobre [Render](https://render.com/docs/free#free-web-services) y tienes un [tutorial de Render](https://github.com/HX-FNegrete/render-fastapi-tutorial) que te hace la vida mas fácil :smile: . También podrías usar [Railway](https://railway.app/), o cualquier otro servicio que permita que la API pueda ser consumida desde la web.
-
-<br/>
-
-**`Análisis exploratorio de los datos`**: _(Exploratory Data Analysis-EDA)_
-
-Ya los datos están limpios, ahora es tiempo de investigar las relaciones que hay entre las variables del dataset, ver si hay outliers o anomalías (que no tienen que ser errores necesariamente :eyes: ), y ver si hay algún patrón interesante que valga la pena explorar en un análisis posterior. Las nubes de palabras dan una buena idea de cuáles palabras son más frecuentes en los títulos, ¡podría ayudar al sistema de predicción! En esta ocasión vamos a pedirte que no uses librerías para hacer EDA automático ya que queremos que pongas en práctica los conceptos y tareas involucrados en el mismo. Puedes leer un poco más sobre EDA en [este articulo](https://medium.com/swlh/introduction-to-exploratory-data-analysis-eda-d83424e47151)
-
-**`Modelo de aprendizaje automático`**: 
-
-Una vez que toda la data es consumible por la API, está lista para consumir por los departamentos de Analytics y Machine Learning, y nuestro EDA nos permite entender bien los datos a los que tenemos acceso, es hora de entrenar nuestro modelo de machine learning para armar un **sistema de recomendación**. Para ello, te ofrecen dos propuestas de trabajo: En la primera, el modelo deberá tener una relación ítem-ítem, esto es se toma un item, en base a que tan similar esa ese ítem al resto, se recomiendan similares. Aquí el input es un juego y el output es una lista de juegos recomendados, para ello recomendamos aplicar la *similitud del coseno*. 
-La otra propuesta para el sistema de recomendación debe aplicar el filtro user-item, esto es tomar un usuario, se encuentran usuarios similares y se recomiendan ítems que a esos usuarios similares les gustaron. En este caso el input es un usuario y el output es una lista de juegos que se le recomienda a ese usuario, en general se explican como “A usuarios que son similares a tí también les gustó…”. 
-Deben crear al menos **uno** de los dos sistemas de recomendación (Si se atreven a tomar el desafío, para mostrar su capacidad al equipo, ¡pueden hacer ambos!). Tu líder pide que el modelo derive obligatoriamente en un GET/POST en la API símil al siguiente formato:
-
-Si es un sistema de recomendación item-item:
-+ def **recomendacion_juego( *`id de producto`* )**:
-    Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
-
-Si es un sistema de recomendación user-item:
-+ def **recomendacion_usuario( *`id de usuario`* )**:
-    Ingresando el id de un usuario, deberíamos recibir una lista con 5 juegos recomendados para dicho usuario.
-
-
-**`Video`**: Necesitas que al equipo le quede claro que tus herramientas funcionan realmente! Haces un video mostrando el resultado de las consultas propuestas y de tu modelo de ML entrenado! Recuerda presentarte, contar muy brevemente de que trata el proyecto y lo que vas a estar mostrando en el video.
-Para grabarlo, puedes usar la herramienta Zoom, haciendo una videollamada y grabando la pantalla, aunque seguramente buscando, encuentres muchas formas más. 😉
-
-<sub> **Spoiler**: El video NO DEBE durar mas de ***7 minutos*** y DEBE mostrar las consultas requeridas en funcionamiento desde la API y una breve explicación del modelo utilizado para el sistema de recomendación. En caso de que te sobre tiempo luego de grabarlo, puedes mostrar/explicar tu EDA, ETL e incluso cómo desarrollaste la API. <sub/>
-
-<br/>
-
-## **Criterios de evaluación y Rúbrica de Corrección**
-
-**`Código`**: Prolijidad de código, uso de clases y/o funciones, en caso de ser necesario, código comentado. Se tendrá en cuenta el trato de los valores str como `COUNter-strike` / `COUNTER-STRIKE` / `counter-strike`.
-
-**`Repositorio`**: Nombres de archivo adecuados, uso de carpetas para ordenar los archivos, README.md presentando el proyecto y el trabajo realizado. Recuerda que este último corresponde a la guía de tu proyecto, no importa que tan corto/largo sea siempre y cuando tu 'yo' + 1.5 AÑOS pueda entenderlo con facilidad. 
-
-**`Cumplimiento`** de los requerimientos de aprobación indicados en el apartado `Propuesta de trabajo`
-
-NOTA: Recuerde entregar el link de acceso al video. Puede alojarse en YouTube, Drive o cualquier plataforma de almacenamiento. **Verificar que sea de acceso público, recomendamos usar modo incógnito en tu navegador para confirmarlo**.
-
-<br/>
-Aquí te sintetizamos que es lo que consideramos un MVP aprobatorio, y la diferencia con un producto completo.
-
-
-
-<p align="center">
-<img src="https://github.com/HX-PRomero/PI_ML_OPS/raw/main/src/MVP_MLops.PNG"  height=250>
-</p>
-
-Acá van a poder encontrar una rúbrica, donde se específican los criterios de corrección utilizados:
-- https://docs.google.com/spreadsheets/d/e/2PACX-1vR459kVWPsFGSBy6Hhzibp6hRVyvzSFUA0ta_v_FcMgNQnE84Kbt9XKIWLDPlJTqg/pubhtml?gid=1246267749&single=true 
-
-
-## **Fuente de datos**
-
-+ [Dataset](https://drive.google.com/drive/folders/1HqBG2-sUkz_R3h1dZU5F2uAzpRn7BSpj): Carpeta con el archivo que requieren ser procesados, tengan en cuenta que hay datos que estan anidados (un diccionario o una lista como valores en la fila).
-+ [Diccionario de datos](https://docs.google.com/spreadsheets/d/1-t9HLzLHIGXvliq56UE_gMaWBVTPfrlTf2D9uAtLGrk/edit?usp=drive_link): Diccionario con algunas descripciones de las columnas disponibles en el dataset.
-<br/>
-
-## **Material de apoyo**
-
-En este mismo repositorio podrás encontrar algunos (hay repositorios con distintos sistemas de recomendación) [links de ayuda](https://github.com/HX-PRomero/PI_ML_OPS/raw/main/Material%20de%20apoyo.md). Recuerda que no son los unicos recursos que puedes utilizar!
-
-## **FAQ PI MLOps**
-Les acercamos un notion donde tienen respuestas a algunas preguntas básicas de la etapa:
-- https://soyhenry-data-labs.notion.site/PIMLops-FAQs-c7ca60c781e9468b8da4bd437c93412d 
-
-  
-<br/>
+#####Endpoint 5:  /developer
+Este endpoint  devuelve un diccionario con el nombre del desarrollador como llave y una lista con la cantidad total de registros de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento como valor positivo o negativo.
+- **Metodo**: GET
+- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/developer-reviews-analysis/{developer}
+- **Parámetros de consulta:** developer
+###End
