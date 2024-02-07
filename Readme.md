@@ -1,10 +1,12 @@
-**PROYECTO INDIVIDUAL Nº1**
-**Machine Learning Operations**
+# <h1 align=center> **PROYECTO INDIVIDUAL Nº1** </h1>
+
+# <h1 align=center>**`Machine Learning Operations (MLOps)`**</h1>
 
 ------------
 
-**Presentado por **
-***Kensit Marian Cortés Nemogá***
+# <h1 align=center> **Presentado por** </h1>
+
+# <h1 align=center>**`Kensit Marian Cortes Nemoga`**</h1>
 
 ------------
 **Acerca del proyecto**
@@ -15,6 +17,7 @@ Steam, una plataforma líder en juegos para PC, necesita mejorar su sistema de r
 
 
 **Herramientas utilizadas**
+
 -PYTHON 
 -PANDAS
 -FASTAPI
@@ -22,7 +25,7 @@ Steam, una plataforma líder en juegos para PC, necesita mejorar su sistema de r
 
 ------------
 
-**Estrategia de trabajo **
+ ## <strong>Estrategia de trabajo</strong**
 
 ------------
 
@@ -205,32 +208,37 @@ print(df_desanidado)
   -
 **Desarrollo de la API**
 
-**Endpoint 1:  /developer**
+**Endpoint 1:  /developer**- <strong>Metodo</strong>:
+
 Este endpoint devuelve la cantidad de items y porcentaje de contenido Free por año según empresa desarrolladora.
-- **Metodo**: GET
-- **'URL'**:https://machine-learning-operations-byli.onrender.com/api/v1/developer/{developer}
-- **Parámetros de consulta:** developer
+- <strong>Metodo</strong>:: GET
+- <strong>URL</strong>:https://machine-learning-operations-byli.onrender.com/api/v1/developer/{developer}
+- <strong>Parametro de consulta</strong>: developer
 
 **Endpoint 2:  /user**
+
 Este endpoinnt  devuelve la cantidad de dinero gastado por el usuario, el porcentaje de recomendación en base a reviews.recommend y cantidad de items
-- **Metodo**: GET
-- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/userdata/{developer}
-- **Parámetros de consulta:** user
+- <strong>Metodo</strong>: GET
+- <strong>URL</strong>:https://machine-learning-operations-byli.onrender.com/api/v1/userdata/{developer}
+- <strong>Parametro de consulta</strong>: user
 
 **Endpoint 3:  /genre**
+
  Este endpoint  devuelve el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año de lanzamiento.
-- **Metodo**: GET
-- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/user-for-genre/{genre}
-- **Parámetros de consulta:** genre
+- <strong>Metodo</strong>: GET
+- <strong>URL</strong>:https://machine-learning-operations-byli.onrender.com/api/v1/user-for-genre/{genre}
+- <strong>Parametro de consuta</strong>: genre
 
 **Endpoint 4:  /year**
+
 Este endpoint devuelve el top 3 de desarrolladores con juegos MÁS recomendados por usuarios para el año dado. (reviews.recommend = True y comentarios positivos
-- **Metodo**: GET
-- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/best-developer-year/{year}
-- **Parámetros de consulta:** year
+- <strong>Metodo</strong>:GET
+- <strong>URL</strong>:https://machine-learning-operations-byli.onrender.com/api/v1/best-developer-year/{year}
+- <strong>Parametro de consulta</strong>: year
 
 **Endpoint 5:  /developer**
+
 Este endpoint  devuelve un diccionario con el nombre del desarrollador como llave y una lista con la cantidad total de registros de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento como valor positivo o negativo.
-- **Metodo**: GET
-- **URL:**https://machine-learning-operations-byli.onrender.com/api/v1/developer-reviews-analysis/{developer}
-- **Parámetros de consulta:** developer
+- <strong>Metodo</strong>: GET
+- <strong>URL</strong>:https://machine-learning-operations-byli.onrender.com/api/v1/developer-reviews-analysis/{developer}
+- <strong>Parametro de consulta</strong>:developer
